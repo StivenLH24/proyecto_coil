@@ -19,6 +19,17 @@ def liquidar_nomina(
     Returns:
         dict[str, float]: Resultado de la liquidación de nómina con subtotal de recargos de horas extras y deducciones.
     """
+    if salario_base < 1_300_000.0:
+        raise ValueError(
+            "El salario_base no puede ser inferior al salario mínimo legal vigente de $1.300.000."
+        )
+    if salario_base < 0:
+        raise ValueError("El salario_base no puede ser negativo.")
+    if horas_extras_diurnas < 0:
+        raise ValueError("Las horas_extras_diurnas no pueden ser negativas.")
+    if horas_extras_nocturnas < 0:
+        raise ValueError("Las horas_extras_nocturnas no pueden ser negativas.")
+
     horas_ordinarias_valor: float = salario_base / 240.0
     recargo_diurno: float = horas_ordinarias_valor * 0.25
     recargo_nocturno: float = horas_ordinarias_valor * 0.75
