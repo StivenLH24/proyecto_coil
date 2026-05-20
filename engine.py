@@ -17,7 +17,7 @@ def liquidar_nomina(
         horas_extras_nocturnas (int): Cantidad de horas extras nocturnas trabajadas.
 
     Returns:
-        dict[str, float]: Resultado de la liquidación de nómina con subtotal de recargos de horas extras.
+        dict[str, float]: Resultado de la liquidación de nómina con subtotal de recargos de horas extras y deducciones.
     """
     horas_ordinarias_valor: float = salario_base / 240.0
     recargo_diurno: float = horas_ordinarias_valor * 0.25
@@ -28,6 +28,15 @@ def liquidar_nomina(
         + horas_extras_nocturnas * recargo_nocturno
     )
 
+    total_devengado: float = salario_base + subtotal_recargos
+    descuento_salud: float = total_devengado * 0.04
+    descuento_pension: float = total_devengado * 0.04
+    neto_pagar: float = total_devengado - descuento_salud - descuento_pension
+
     return {
         "subtotal_recargos": subtotal_recargos,
+        "total_devengado": total_devengado,
+        "descuento_salud": descuento_salud,
+        "descuento_pension": descuento_pension,
+        "neto_pagar": neto_pagar,
     }
