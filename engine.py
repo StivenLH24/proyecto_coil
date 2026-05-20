@@ -33,10 +33,15 @@ def liquidar_nomina(
     descuento_pension: float = total_devengado * 0.04
     neto_pagar: float = total_devengado - descuento_salud - descuento_pension
 
+    auxilio_transporte: float = 162_000.0 if salario_base <= 2_600_000.0 else 0.0
+    neto_pagar_final: float = neto_pagar + auxilio_transporte
+
     return {
         "subtotal_recargos": subtotal_recargos,
         "total_devengado": total_devengado,
         "descuento_salud": descuento_salud,
         "descuento_pension": descuento_pension,
-        "neto_pagar": neto_pagar,
+        "neto_pagar": neto_pagar_final,
+        "auxilio_transporte": auxilio_transporte,
+        "neto_pagar_antes_auxilio": neto_pagar,
     }
