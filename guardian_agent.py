@@ -211,6 +211,7 @@ def construir_imagen_docker() -> None:
             check=True,
             capture_output=True,
             text=True,
+            errors="replace",
             timeout=TIMEOUT_DOCKER_BUILD,
         )
         log.info("PASO 4 — Imagen Docker construida exitosamente.")
@@ -246,6 +247,7 @@ def ejecutar_pruebas_docker() -> None:
             comando,
             capture_output=True,
             text=True,
+            errors="replace",
             timeout=TIMEOUT_DOCKER_RUN,
         )
         log.info("PASO 5 — Codigo de salida: %d", resultado.returncode)
