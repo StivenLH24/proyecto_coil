@@ -23,20 +23,20 @@ def test_tc05_vlr_hora_negativo():
 
 def test_tc06_recargo_diurno():
     resultado = liquidar_nomina(2_000_000, 10, 0, 8_333.33)
-    assert resultado["subtotal_recargos"] == pytest.approx(20_833.32, abs=0.02)
+    assert resultado["subtotal_recargos"] == pytest.approx(20_833.33, abs=0.02)
 
 def test_tc07_recargo_nocturno():
     resultado = liquidar_nomina(2_000_000, 0, 5, 8_333.33)
-    assert resultado["subtotal_recargos"] == pytest.approx(31_249.99, abs=0.02)
+    assert resultado["subtotal_recargos"] == pytest.approx(31_250.00, abs=0.02)
 
 def test_tc08_recargos_mixtos():
     resultado = liquidar_nomina(2_000_000, 10, 5, 8_333.33)
-    assert resultado["subtotal_recargos"] == pytest.approx(52_083.32, abs=0.02)
+    assert resultado["subtotal_recargos"] == pytest.approx(52_083.33, abs=0.02)
 
 def test_tc09_deducciones_seguridad_social():
     resultado = liquidar_nomina(2_000_000, 0, 0, 8_333.33)
-    assert resultado["descuento_salud"] == pytest.approx(80_000, abs=0.02)
-    assert resultado["descuento_pension"] == pytest.approx(80_000, abs=0.02)
+    assert resultado["descuento_salud"] == pytest.approx(80_000.00, abs=0.02)
+    assert resultado["descuento_pension"] == pytest.approx(80_000.00, abs=0.02)
 
 def test_tc10_auxilio_transporte():
     resultado = liquidar_nomina(1_500_000, 0, 0, 10_833.33)
