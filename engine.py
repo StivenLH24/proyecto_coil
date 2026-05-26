@@ -16,6 +16,7 @@ def liquidar_nomina(
     salario_base: float,
     horas_extras_diurnas: int,
     horas_extras_nocturnas: int,
+    vlr_hora: float,
 ) -> dict[str, float]:
     """Liquidar nómina mensual con recargos de horas extras y deducciones legales.
 
@@ -26,6 +27,7 @@ def liquidar_nomina(
         salario_base (float): Salario base mensual del empleado en pesos colombianos.
         horas_extras_diurnas (int): Número de horas extras diurnas trabajadas.
         horas_extras_nocturnas (int): Número de horas extras nocturnas trabajadas.
+        vlr_hora (float): Valor de la hora ordinaria en pesos colombianos.
 
     Returns:
         dict[str, float]: Un diccionario con los montos calculados de la nómina.
@@ -47,16 +49,18 @@ def liquidar_nomina(
             "El salario_base no puede ser inferior al salario mínimo legal vigente de $1.300.000."
         )
 
-    # R2: Validar que no se acepten valores negativos para salario u horas extras.
+    # R2: Validar que no se acepten valores negativos para salario, horas extras, ni vlr_hora.
     if salario_base < 0:
         raise ValueError("El salario_base no puede ser negativo.")
     if horas_extras_diurnas < 0:
         raise ValueError("Las horas_extras_diurnas no pueden ser negativas.")
     if horas_extras_nocturnas < 0:
         raise ValueError("Las horas_extras_nocturnas no pueden ser negativas.")
+    if vlr_hora < 0:
+        raise ValueError("El vlr_hora no puede ser negativo.")
 
-    # R3: Calcular el valor de la hora ordinaria con base en una jornada de 240 horas al mes.
-    valor_hora_ordinaria: float = salario_base / HORAS_MENSUALES
+    # R3: Usar el valor de la hora ordinaria recibido como parámetro.
+    valor_hora_ordinaria: float = vlr_hora
 
     # R4: Aplicar recargos de 25% para horas extras diurnas y 75% para horas extras nocturnas.
     valor_recargo_diurno: float = valor_hora_ordinaria * RECARGO_DIURNO
