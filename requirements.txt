@@ -1,6 +1,3 @@
-langchain
-langchain-community
-langchain-ollama
-ollama
-pytest
-pytest-json-report
+langchain>=1.0.0
+langchain-core>=1.0.0
+langchain-ollama>=1.0.0

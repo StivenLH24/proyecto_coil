@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY engine.py .
+COPY tests_generados.py .
+
+RUN pip install pytest pytest-json-report
+
+CMD ["pytest", "tests_generados.py", "--json-report", "--json-report-file=/app/veredicto.json"]

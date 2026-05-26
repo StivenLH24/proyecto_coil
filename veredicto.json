@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-05-26T19:00:15.537020+00:00",
+  "modelo_ia": "qwen2.5-coder:7b",
+  "tests_generados": "tests_generados.py",
+  "dockerfile": "Dockerfile.guardian",
+  "tests_pasados": 13,
+  "tests_fallidos": 0,
+  "veredicto": "APROBADO"
+}
