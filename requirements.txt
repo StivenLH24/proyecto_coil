@@ -1,0 +1,6 @@
+langchain
+langchain-community
+langchain-ollama
+ollama
+pytest
+pytest-json-report
