@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 IMAGEN = "guardian-sandbox"
 CONTENEDOR = "guardian-sandbox"
-DOCKERFILE = "Dockerfile"
+DOCKERFILE = "guardian/Dockerfile"
 REPORTE = ".report.json"
 TIMEOUT_SEG = 60
 

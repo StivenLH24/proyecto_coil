@@ -1,4 +1,4 @@
-# Escenarios de Validacion Academica — Engine de Nomina (TC-01 a TC-10)
+# Escenarios de Validacion Academica — Engine de Nomina (TC-01 a TC-13)
 
 ## TC-01: Validacion de salario minimo legal vigente
 - Dado un `salario_base` menor a $1.300.000, la funcion debe lanzar `ValueError`.
@@ -41,3 +41,25 @@
 - Ejemplos:
   - `salario_base = 1_500_000` → `auxilio_transporte = 162_000`
   - `salario_base = 3_000_000` → `auxilio_transporte = 0`
+
+## TC-11: Limite exacto del auxilio de transporte
+- Dado `salario_base = 2_600_000` (exactamente 2 SMLV), `vlr_hora = 10_833.33` y sin horas extras, el auxilio de transporte debe ser `162_000` porque el salario es menor o igual al limite.
+- Ejemplo: `liquidar_nomina(2_600_000, 0, 0, 10_833.33)` → `auxilio_transporte = 162_000`, `neto_pagar = 2_600_000 - 104_000 - 104_000 + 162_000 = 2_554_000`.
+
+## TC-12: Caso mixto completo con validacion de todos los campos
+- Dado `salario_base = 2_300_000`, `vlr_hora = 9_583.33`, `horas_extras_diurnas = 4` y `horas_extras_nocturnas = 3`, se deben validar todos los campos del diccionario retornado (usar `pytest.approx` con tolerancia de 0.02 por precision de punto flotante):
+  - `subtotal_recargos ≈ 31_145.82` = 4 * (9_583.33 * 0.25) + 3 * (9_583.33 * 0.75)
+  - `total_devengado ≈ 2_331_145.82`
+  - `descuento_salud ≈ 93_245.83`
+  - `descuento_pension ≈ 93_245.83`
+  - `auxilio_transporte = 162_000` (salario <= 2.600.000)
+  - `neto_pagar ≈ 2_306_654.16`
+
+## TC-13: Salario alto sin auxilio de transporte con horas extras
+- Dado `salario_base = 4_000_000`, `vlr_hora = 16_666.67`, `horas_extras_diurnas = 8` y `horas_extras_nocturnas = 2`, el sistema NO debe otorgar auxilio de transporte porque el salario supera los 2 SMLV. (usar `pytest.approx` con tolerancia de 0.02 por precision de punto flotante)
+  - `subtotal_recargos ≈ 58_333.34`
+  - `total_devengado ≈ 4_058_333.35`
+  - `descuento_salud ≈ 162_333.33`
+  - `descuento_pension ≈ 162_333.33`
+  - `auxilio_transporte = 0`
+  - `neto_pagar ≈ 3_733_666.68`

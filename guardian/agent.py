@@ -22,8 +22,8 @@ log = logging.getLogger(__name__)
 RUTA_ENGINE = Path("engine.py")
 RUTA_CASOS = Path("casos_prueba.md")
 RUTA_SALIDA = Path("test_generated.py")
-MODELO = "llama3:8b"
-TIMEOUT = 120
+MODELO = "llama3:latest"
+TIMEOUT = 180
 
 
 def leer_archivo(ruta: Path) -> str:
@@ -41,29 +41,76 @@ def construir_prompt(codigo_engine: str, casos_prueba: str) -> str:
     template = PromptTemplate.from_template(
         """Eres un ingeniero de calidad experto en Python y Pytest.
 
-A continuación recibes el código fuente de un motor de nómina colombiano
-y una especificación de casos de prueba. Debes generar un archivo de
-pruebas Pytest completo y válido.
+A continuacion recibes el codigo fuente de un motor de nomina colombiano
+y una especificacion de escenarios de validacion. Debes generar un archivo
+de pruebas Pytest completo, valido y CORRECTO numericamente.
 
-## Código fuente (engine.py)
+## Codigo fuente (engine.py)
 ```python
 {codigo_engine}
 ```
 
-## Casos de prueba
+## Escenarios de validacion
 {casos_prueba}
 
-## Instrucciones
-1. Genera SOLO código Python válido con pruebas Pytest.
-2. NO incluyas explicaciones ni texto adicional.
-3. NO envuelvas el código en bloques markdown.
-4. Importa la función `liquidar_nomina` desde `engine`.
-5. Cada función de prueba debe tener un assert.
-6. Usa `pytest.approx` para comparaciones con decimales.
-7. Cubre TODAS las reglas R1 a R5.
-8. Incluye al menos un caso feliz y uno de error por regla.
+## INSTRUCCIONES ESTRICTAS (SIGUE CADA UNA)
 
-Genera el código de prueba ahora:"""
+### Reglas de formato
+1. Genera SOLO codigo Python valido con pruebas Pytest.
+2. NO incluyas explicaciones ni texto adicional fuera del codigo.
+3. NO envuelvas el codigo en bloques markdown.
+4. Importa la funcion `liquidar_nomina` desde `engine`.
+5. Usa `pytest.approx(valor, abs=0.02)` para toda comparacion numerica.
+
+### Estructura de las pruebas (OBLIGATORIO)
+- Crea UNA funcion de prueba POR cada escenario (NO uses parametrize).
+- Las funciones de prueba deben llamarse `test_tcXX_descripcion()`.
+- Cada funcion de prueba debe tener exactamente UN assert por campo validado.
+
+### Pruebas de error (ValueError)
+Para escenarios que deben lanzar ValueError, usa EXACTAMENTE este patron:
+```python
+def test_tcXX_descripcion():
+    with pytest.raises(ValueError):
+        liquidar_nomina(...)
+```
+NO uses el parametro `match` en pytest.raises.
+
+### Pruebas de valores correctos
+La funcion `liquidar_nomina` retorna un diccionario con estas claves:
+- "subtotal_recargos" (float)
+- "total_devengado" (float)
+- "descuento_salud" (float)
+- "descuento_pension" (float)
+- "neto_pagar_antes_auxilio" (float)
+- "auxilio_transporte" (float)
+- "neto_pagar" (float)
+
+Para validar, usa EXACTAMENTE este patron:
+```python
+def test_tcXX_descripcion():
+    resultado = liquidar_nomina(salario_base, horas_extras_diurnas, horas_extras_nocturnas, vlr_hora)
+    assert resultado["clave"] == pytest.approx(valor_esperado, abs=0.02)
+```
+
+### Reglas de calculo (MUY IMPORTANTE - USA ESTAS FORMULAS)
+- Recargo diurno por hora = vlr_hora * RECARGO_DIURNO (donde RECARGO_DIURNO = 0.25)
+- Recargo nocturno por hora = vlr_hora * RECARGO_NOCTURNO (donde RECARGO_NOCTURNO = 0.75)
+- subtotal_recargos = (horas_extras_diurnas * recargo_diurno_por_hora) + (horas_extras_nocturnas * recargo_nocturno_por_hora)
+- total_devengado = salario_base + subtotal_recargos
+- descuento_salud = total_devengado * DEDICCION_SEGURIDAD_SOCIAL (donde DEDICCION_SEGURIDAD_SOCIAL = 0.04)
+- descuento_pension = total_devengado * DEDICCION_SEGURIDAD_SOCIAL (donde DEDICCION_SEGURIDAD_SOCIAL = 0.04)
+- auxilio_transporte = 162000 si salario_base <= 2600000, sino 0
+- neto_pagar = total_devengado - descuento_salud - descuento_pension + auxilio_transporte
+
+### Validacion numerica
+CALCULA LOS VALORES ESPERADOS TU MISMO usando las formulas exactas.
+- Para vlr_hora = 8333.33 y 10 horas diurnas: recargo = 10 * 8333.33 * 0.25 = 20833.32
+- Para vlr_hora = 8333.33 y 5 horas nocturnas: recargo = 5 * 8333.33 * 0.75 = 31249.99
+- NO confundas subtotal_recargos con total_devengado.
+- Verifica que los decimales sean correctos.
+
+Genera el codigo de prueba AHORA:"""
     )
     return template.format(
         codigo_engine=codigo_engine, casos_prueba=casos_prueba
@@ -89,8 +136,8 @@ def generar_pruebas() -> str:
 
     llm = OllamaLLM(
         model=MODELO,
-        temperature=0.1,
-        num_predict=4096,
+        temperature=0.0,
+        num_predict=8192,
         timeout=TIMEOUT,
     )
 
